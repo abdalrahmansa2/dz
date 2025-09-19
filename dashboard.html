@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - Digital Zone</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #233673;
+            --accent-color: #3498db;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Poppins', sans-serif;
+            background-color: #f5f7f9;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        body.rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        body.ltr {
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary-color);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background: var(--secondary-color);
+        }
+
+        .menu-item i {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .submenu {
+            padding-right: 30px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu.open {
+            max-height: 500px;
+        }
+
+        .submenu-item {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .submenu-item:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-right: var(--sidebar-width);
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            height: var(--header-height);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+            color: var(--primary-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 20px;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+
+        /* Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: var(--accent-color);
+            font-size: 1.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .stat-text {
+            color: #666;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            padding: 15px 20px;
+            background: var(--light-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            background: var(--accent-color);
+        }
+
+        .btn-delete {
+            background: #dc3545;
+        }
+
+        /* Forms */
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 500px;
+            max-width: 90%;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .sidebar.active + .main-content {
+                margin-right: var(--sidebar-width);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 0 15px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        /* Language Specific Styles */
+        body.ltr .menu-item i {
+            margin-left: 0;
+            margin-right: 10px;
+        }
+
+        body.ltr th, 
+        body.ltr td {
+            text-align: left;
+        }
+
+        body.ltr .submenu {
+            padding-right: 0;
+            padding-left: 30px;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            z-index: 3000;
+            transition: var(--transition);
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        .notification.warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+/* نضع زر اللغة في مكانه في الوضع العربي */
+body.rtl .header-container {
+    flex-direction: row;
+}
+
+body.rtl .logo {
+    order: 1;
+}
+
+body.rtl #mainNav {
+    order: 2;
+}
+
+body.rtl .language-container {
+    order: 3;
+}
+
+body.rtl .mobile-menu-toggle {
+    order: 4;
+}
+
+/* للوضع الإنجليزي نعكس الترتيب */
+body.ltr .header-container {
+    flex-direction: row;
+}
+
+body.ltr .logo {
+    order: 3;
+}
+
+body.ltr #mainNav {
+    order: 2;
+}
+
+body.ltr .language-container {
+    order: 1;
+}
+
+body.ltr .mobile-menu-toggle {
+    order: 4;
+}
+
+/* نجعله متجاوبًا */
+@media (max-width: 768px) {
+    /* نضع زر اللغة في مكان واضح في الوضع المحمول */
+    body.rtl .language-container,
+    body.ltr .language-container {
+        order: 3;
+    }
+
+    /* إخفاء القائمة في الشاشات الصغيرة */
+    #mainNav {
+        display: none;
+    }
+
+    #mainNav.active {
+        display: block;
+    }
+}
+    </style>
+</head>
+<body class="rtl">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 data-translate="dashboard_title">لوحة التحكم</h2>
+                <p data-translate="admin_panel">لوحة إدارة الموقع</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span data-translate="menu_dashboard">لوحة التحكم</span>
+                </div>
+                
+                <div class="menu-item" data-section="pages">
+                    <i class="fas fa-file"></i>
+                    <span data-translate="menu_pages">الصفحات</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="submenu">
+                    <div class="submenu-item" data-section="home-page" data-translate="submenu_home">الصفحة الرئيسية</div>
+                    <div class="submenu-item" data-section="products-page" data-translate="submenu_products">المنتجات</div>
+                    <div class="submenu-item" data-section="projects-page" data-translate="submenu_projects">المشاريع</div>
+                    <div class="submenu-item" data-section="news-page" data-translate="submenu_news">الأخبار</div>
+                    <div class="submenu-item" data-section="store-page" data-translate="submenu_store">المتجر</div>
+                    <div class="submenu-item" data-section="contact-page" data-translate="submenu_contact">اتصل بنا</div>
+                </div>
+                
+                <div class="menu-item" data-section="products">
+                    <i class="fas fa-box"></i>
+                    <span data-translate="menu_products">إدارة المنتجات</span>
+                </div>
+                
+                <div class="menu-item" data-section="news">
+                    <i class="fas fa-newspaper"></i>
+                    <span data-translate="menu_news">إدارة الأخبار</span>
+                </div>
+                
+                <div class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span data-translate="menu_users">المستخدمين</span>
+                </div>
+                
+                <div class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span data-translate="menu_settings">الإعدادات</span>
+                </div>
+                
+                <div class="menu-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span data-translate="menu_logout">تسجيل الخروج</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="toggle-sidebar" id="toggleSidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h3 data-translate="dashboard_title">لوحة تحكم Digital Zone</h3>
+                </div>
+                
+                <div class="header-right">
+                    <div class="language-switcher">
+                        <button class="lang-btn" id="langToggle">EN</button>
+                    </div>
+                    
+                    <div class="user-profile">
+                        <div class="user-avatar">AD</div>
+                        <span data-translate="admin_name">مدير النظام</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <div class="dashboard-section active" id="dashboard-section">
+                    <h2 class="section-title" data-translate="dashboard_welcome">مرحباً بك في لوحة التحكم</h2>
+                    
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file"></i>
+                            </div>
+                            <div class="stat-number">6</div>
+                            <div class="stat-text" data-translate="stat_pages">الصفحات</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="stat-number" id="products-count">0</div>
+                            <div class="stat-text" data-translate="stat_products">المنتجات</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                            <div class="stat-number" id="news-count">0</div>
+                            <div class="stat-text" data-translate="stat_news">أخبار</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-number" id="users-count">1</div>
+                            <div class="stat-text" data-translate="stat_users">مستخدمين</div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title" data-translate="recent_activity">النشاط الحديث</div>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-translate="activity_user">المستخدم</th>
+                                    <th data-translate="activity_action">الإجراء</th>
+                                    <th data-translate="activity_item">العنصر</th>
+                                    <th data-translate="activity_time">الوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity-table-body">
+                                <!-- سيتم ملؤه بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pages Section -->
+                <div class="dashboard-section" id="pages-section">
+                    <h2 class="section-title" data-translate="manage_pages">إدارة الصفحات</h2>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title" data-translate="pages_list">قائمة الصفحات</div>
+                            <button class="btn" data-translate="add_page" onclick="openModal('add-page-modal')">إضافة صفحة</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-translate="page_name">اسم الصفحة</th>
+                                    <th data-translate="page_url">رابط الصفحة</th>
+                                    <th data-translate="page_status">الحالة</th>
+                                    <th data-translate="actions">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pages-table-body">
+                                <!-- سيتم ملؤه بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Products Section -->
+                <div class="dashboard-section" id="products-section">
+                    <h2 class="section-title" data-translate="manage_products">إدارة المنتجات</h2>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title" data-translate="products_list">قائمة المنتجات</div>
+                            <button class="btn" data-translate="add_product" onclick="openModal('add-product-modal')">إضافة منتج</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-translate="product_name">اسم المنتج</th>
+                                    <th data-translate="product_category">الفئة</th>
+                                    <th data-translate="product_price">السعر</th>
+                                    <th data-translate="product_status">الحالة</th>
+                                    <th data-translate="actions">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <!-- سيتم ملؤه بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- News Section -->
+                <div class="dashboard-section" id="news-section">
+                    <h2 class="section-title" data-translate="manage_news">إدارة الأخبار</h2>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title" data-translate="news_list">قائمة الأخبار</div>
+                            <button class="btn" data-translate="add_news" onclick="openModal('add-news-modal')">إضافة خبر</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-translate="news_title">عنوان الخبر</th>
+                                    <th data-translate="news_category">الفئة</th>
+                                    <th data-translate="news_date">التاريخ</th>
+                                    <th data-translate="news_status">الحالة</th>
+                                    <th data-translate="actions">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="news-table-body">
+                                <!-- سيتم ملؤه بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Users Section -->
+                <div class="dashboard-section" id="users-section">
+                    <h2 class="section-title" data-translate="manage_users">إدارة المستخدمين</h2>
+                    
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title" data-translate="users_list">قائمة المستخدمين</div>
+                            <button class="btn" data-translate="add_user" onclick="openModal('add-user-modal')">إضافة مستخدم</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th data-translate="user_name">اسم المستخدم</th>
+                                    <th data-translate="user_email">البريد الإلكتروني</th>
+                                    <th data-translate="user_role">الدور</th>
+                                    <th data-translate="user_status">الحالة</th>
+                                    <th data-translate="actions">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- سيتم ملؤه بالبيانات -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div class="dashboard-section" id="settings-section">
+                    <h2 class="section-title" data-translate="manage_settings">الإعدادات</h2>
+                    
+                    <div class="tabs">
+                        <div class="tab active" data-tab="general" data-translate="settings_general">عام</div>
+                        <div class="tab" data-tab="language" data-translate="settings_language">اللغة</div>
+                        <div class="tab" data-tab="seo" data-translate="settings_seo">SEO</div>
+                    </div>
+                    
+                    <div class="tab-content active" id="general-tab">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label data-translate="settings_site_title">اسم الموقع:</label>
+                                <input type="text" class="form-control" id="site-title" value="Digital Zone">
+                            </div>
+                            <div class="form-group">
+                                <label data-translate="settings_site_description">وصف الموقع:</label>
+                                <textarea class="form-control" id="site-description">شركة Digital Zone تقدم حلولاً متكاملة في مجال البنوك والطاقة وتقنية المعلومات</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label data-translate="settings_admin_email">بريد المدير:</label>
+                                <input type="email" class="form-control" id="admin-email" value="admin@digitalzone.com">
+                            </div>
+                            <button class="btn" data-translate="btn_save_settings">حفظ الإعدادات</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="language-tab">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label data-translate="settings_default_language">اللغة الافتراضية:</label>
+                                <select class="form-control" id="default-language">
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="rtl-support" checked> 
+                                    <span data-translate="settings_rtl_support">دعم النمط من اليمين لليسار (RTL)</span>
+                                </label>
+                            </div>
+                            <button class="btn" data-translate="btn_save_settings">حفظ الإعدادات</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="seo-tab">
+                        <div class="form-container">
+                            <div class="form-group">
+                                <label data-translate="settings_meta_title">Meta Title:</label>
+                                <input type="text" class="form-control" id="meta-title" value="Digital Zone - حلول متكاملة">
+                            </div>
+                            <div class="form-group">
+                                <label data-translate="settings_meta_description">Meta Description:</label>
+                                <textarea class="form-control" id="meta-description">شركة Digital Zone تقدم حلولاً متكاملة في مجال البنوك والطاقة وتقنية المعلومات</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label data-translate="settings_meta_keywords">Meta Keywords:</label>
+                                <textarea class="form-control" id="meta-keywords">Digital Zone, حلول بنكية, طاقة, تكنولوجيا المعلومات</textarea>
+                            </div>
+                            <button class="btn" data-translate="btn_save_settings">حفظ الإعدادات</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Page specific sections (Home, Products, etc.) -->
+                <div class="dashboard-section" id="home-page-section">
+                    <h2 class="section-title" data-translate="edit_home_page">تعديل الصفحة الرئيسية</h2>
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label data-translate="page_title">عنوان الصفحة:</label>
+                            <input type="text" class="form-control" id="home-page-title" value="Digital Zone - الرئيسية">
+                        </div>
+                        <div class="form-group">
+                            <label data-translate="page_content">محتوى الصفحة:</label>
+                            <textarea class="form-control" id="home-page-content" rows="10">مرحباً بكم في Digital Zone، نحن نقدم حلولاً متكاملة في مجال البنوك والطاقة وتقنية المعلومات.</textarea>
+                        </div>
+                        <button class="btn" data-translate="btn_save_changes">حفظ التغييرات</button>
+                    </div>
+                </div>
+                
+                <!-- يمكن إضافة أقسام أخرى للصفحات هنا -->
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Modals -->
+    <!-- Add Page Modal -->
+    <div class="modal" id="add-page-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-translate="add_page">إضافة صفحة جديدة</h3>
+                <button class="modal-close" onclick="closeModal('add-page-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="page-title" data-translate="page_title">عنوان الصفحة:</label>
+                    <input type="text" id="page-title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="page-url" data-translate="page_url">رابط الصفحة:</label>
+                    <input type="text" id="page-url" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="page-content" data-translate="page_content">محتوى الصفحة:</label>
+                    <textarea id="page-content" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('add-page-modal')" data-translate="btn_cancel">إلغاء</button>
+                <button class="btn" onclick="addNewPage()" data-translate="btn_save">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="add-product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-translate="add_product">إضافة منتج جديد</h3>
+                <button class="modal-close" onclick="closeModal('add-product-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="product-name" data-translate="product_name">اسم المنتج:</label>
+                    <input type="text" id="product-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-category" data-translate="product_category">الفئة:</label>
+                    <select id="product-category" class="form-control">
+                        <option value="banking" data-translate="category_banking">حلول البنوك</option>
+                        <option value="power" data-translate="category_power">حلول الطاقة</option>
+                        <option value="it" data-translate="category_it">تكنولوجيا المعلومات</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-price" data-translate="product_price">السعر:</label>
+                    <input type="number" id="product-price" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="product-description" data-translate="product_description">الوصف:</label>
+                    <textarea id="product-description" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('add-product-modal')" data-translate="btn_cancel">إلغاء</button>
+                <button class="btn" onclick="addNewProduct()" data-translate="btn_save">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add News Modal -->
+    <div class="modal" id="add-news-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-translate="add_news">إضافة خبر جديد</h3>
+                <button class="modal-close" onclick="closeModal('add-news-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="news-title" data-translate="news_title">عنوان الخبر:</label>
+                    <input type="text" id="news-title" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="news-category" data-translate="news_category">الفئة:</label>
+                    <select id="news-category" class="form-control">
+                        <option value="technology" data-translate="category_technology">تكنولوجيا</option>
+                        <option value="business" data-translate="category_business">أعمال</option>
+                        <option value="products" data-translate="category_products">منتجات</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="news-content" data-translate="news_content">محتوى الخبر:</label>
+                    <textarea id="news-content" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('add-news-modal')" data-translate="btn_cancel">إلغاء</button>
+                <button class="btn" onclick="addNewNews()" data-translate="btn_save">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="add-user-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-translate="add_user">إضافة مستخدم جديد</h3>
+                <button class="modal-close" onclick="closeModal('add-user-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="user-name" data-translate="user_name">اسم المستخدم:</label>
+                    <input type="text" id="user-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="user-email" data-translate="user_email">البريد الإلكتروني:</label>
+                    <input type="email" id="user-email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="user-password" data-translate="user_password">كلمة المرور:</label>
+                    <input type="password" id="user-password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="user-role" data-translate="user_role">الدور:</label>
+                    <select id="user-role" class="form-control">
+                        <option value="admin" data-translate="role_admin">مدير</option>
+                        <option value="editor" data-translate="role_editor">محرر</option>
+                        <option value="author" data-translate="role_author">مؤلف</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('add-user-modal')" data-translate="btn_cancel">إلغاء</button>
+                <button class="btn" onclick="addNewUser()" data-translate="btn_save">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-translate="confirm_delete">تأكيد الحذف</h3>
+                <button class="modal-close" onclick="closeModal('delete-confirm-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-message" data-translate="confirm_delete_message">هل أنت متأكد من أنك تريد حذف هذا العنصر؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal('delete-confirm-modal')" data-translate="btn_cancel">إلغاء</button>
+                <button class="btn btn-delete" onclick="confirmDelete()" data-translate="btn_confirm_delete">تأكيد الحذف</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // البيانات التخزينية
+        let dashboardData = {
+            pages: [
+                { id: 1, title: "الصفحة الرئيسية", url: "index.html", status: "active" },
+                { id: 2, title: "المنتجات", url: "products.html", status: "active" },
+                { id: 3, title: "المشاريع", url: "projects.html", status: "active" },
+                { id: 4, title: "الأخبار", url: "news.html", status: "active" },
+                { id: 5, title: "المتجر", url: "store.html", status: "active" },
+                { id: 6, title: "اتصل بنا", url: "contact.html", status: "active" }
+            ],
+            products: [],
+            news: [],
+            users: [
+                { id: 1, name: "مدير النظام", email: "admin@digitalzone.com", role: "admin", status: "active" }
+            ],
+            activities: [
+                { user: "مدير النظام", action: "تسجيل الدخول", item: "النظام", time: "منذ 5 دقائق" }
+            ],
+            settings: {
+                siteTitle: "Digital Zone",
+                siteDescription: "شركة Digital Zone تقدم حلولاً متكاملة في مجال البنوك والطاقة وتقنية المعلومات",
+                defaultLanguage: "ar",
+                rtlSupport: true
+            }
+        };
+
+        // عناصر الواجهة
+        let currentDeleteItem = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // تهيئة البيانات من localStorage إذا موجودة
+            initData();
+            
+            // تحديث العدادت
+            updateCounters();
+            
+            // تحميل الجداول
+            loadPagesTable();
+            loadProductsTable();
+            loadNewsTable();
+            loadUsersTable();
+            loadActivitiesTable();
+            
+            // إعداد الأحداث
+            setupEventListeners();
+        });
+
+        function initData() {
+            const savedData = localStorage.getItem('dashboardData');
+            if (savedData) {
+                dashboardData = JSON.parse(savedData);
+            } else {
+                // حفظ البيانات الافتراضية
+                saveData();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+        }
+
+        function updateCounters() {
+            document.getElementById('products-count').textContent = dashboardData.products.length;
+            document.getElementById('news-count').textContent = dashboardData.news.length;
+            document.getElementById('users-count').textContent = dashboardData.users.length;
+        }
+
+        function loadPagesTable() {
+            const tbody = document.getElementById('pages-table-body');
+            tbody.innerHTML = '';
+            
+            dashboardData.pages.forEach(page => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${page.title}</td>
+                    <td>${page.url}</td>
+                    <td><span class="status-badge ${page.status === 'active' ? 'status-active' : 'status-inactive'}">${page.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editItem('page', ${page.id})">تعديل</button>
+                            <button class="btn btn-delete" onclick="deleteItem('page', ${page.id})">حذف</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadProductsTable() {
+            const tbody = document.getElementById('products-table-body');
+            tbody.innerHTML = '';
+            
+            dashboardData.products.forEach(product => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>${getCategoryName(product.category)}</td>
+                    <td>${product.price} ₪</td>
+                    <td><span class="status-badge ${product.status === 'active' ? 'status-active' : 'status-inactive'}">${product.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editItem('product', ${product.id})">تعديل</button>
+                            <button class="btn btn-delete" onclick="deleteItem('product', ${product.id})">حذف</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadNewsTable() {
+            const tbody = document.getElementById('news-table-body');
+            tbody.innerHTML = '';
+            
+            dashboardData.news.forEach(news => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${news.title}</td>
+                    <td>${getNewsCategoryName(news.category)}</td>
+                    <td>${news.date}</td>
+                    <td><span class="status-badge ${news.status === 'active' ? 'status-active' : 'status-inactive'}">${news.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editItem('news', ${news.id})">تعديل</button>
+                            <button class="btn btn-delete" onclick="deleteItem('news', ${news.id})">حذف</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            dashboardData.users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${getRoleName(user.role)}</td>
+                    <td><span class="status-badge ${user.status === 'active' ? 'status-active' : 'status-inactive'}">${user.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-edit" onclick="editItem('user', ${user.id})">تعديل</button>
+                            <button class="btn btn-delete" onclick="deleteItem('user', ${user.id})">حذف</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function loadActivitiesTable() {
+            const tbody = document.getElementById('activity-table-body');
+            tbody.innerHTML = '';
+            
+            dashboardData.activities.slice().reverse().forEach(activity => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${activity.user}</td>
+                    <td>${activity.action}</td>
+                    <td>${activity.item}</td>
+                    <td>${activity.time}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addNewPage() {
+            const title = document.getElementById('page-title').value;
+            const url = document.getElementById('page-url').value;
+            const content = document.getElementById('page-content').value;
+            
+            if (!title || !url) {
+                showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            const newPage = {
+                id: Date.now(),
+                title,
+                url,
+                content,
+                status: 'active'
+            };
+            
+            dashboardData.pages.push(newPage);
+            saveData();
+            loadPagesTable();
+            updateCounters();
+            addActivity('إضافة', `صفحة: ${title}`);
+            closeModal('add-page-modal');
+            showNotification('تم إضافة الصفحة بنجاح', 'success');
+            
+            // مسح الحقول
+            document.getElementById('page-title').value = '';
+            document.getElementById('page-url').value = '';
+            document.getElementById('page-content').value = '';
+        }
+
+        function addNewProduct() {
+            const name = document.getElementById('product-name').value;
+            const category = document.getElementById('product-category').value;
+            const price = document.getElementById('product-price').value;
+            const description = document.getElementById('product-description').value;
+            
+            if (!name || !price) {
+                showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            const newProduct = {
+                id: Date.now(),
+                name,
+                category,
+                price,
+                description,
+                status: 'active'
+            };
+            
+            dashboardData.products.push(newProduct);
+            saveData();
+            loadProductsTable();
+            updateCounters();
+            addActivity('إضافة', `منتج: ${name}`);
+            closeModal('add-product-modal');
+            showNotification('تم إضافة المنتج بنجاح', 'success');
+            
+            // مسح الحقول
+            document.getElementById('product-name').value = '';
+            document.getElementById('product-price').value = '';
+            document.getElementById('product-description').value = '';
+        }
+
+        function addNewNews() {
+            const title = document.getElementById('news-title').value;
+            const category = document.getElementById('news-category').value;
+            const content = document.getElementById('news-content').value;
+            
+            if (!title || !content) {
+                showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            const newNews = {
+                id: Date.now(),
+                title,
+                category,
+                content,
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'active'
+            };
+            
+            dashboardData.news.push(newNews);
+            saveData();
+            loadNewsTable();
+            updateCounters();
+            addActivity('إضافة', `خبر: ${title}`);
+            closeModal('add-news-modal');
+            showNotification('تم إضافة الخبر بنجاح', 'success');
+            
+            // مسح الحقول
+            document.getElementById('news-title').value = '';
+            document.getElementById('news-content').value = '';
+        }
+
+        function addNewUser() {
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const password = document.getElementById('user-password').value;
+            const role = document.getElementById('user-role').value;
+            
+            if (!name || !email || !password) {
+                showNotification('يرجى ملء جميع الحقول المطلوبة', 'error');
+                return;
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                name,
+                email,
+                password,
+                role,
+                status: 'active'
+            };
+            
+            dashboardData.users.push(newUser);
+            saveData();
+            loadUsersTable();
+            updateCounters();
+            addActivity('إضافة', `مستخدم: ${name}`);
+            closeModal('add-user-modal');
+            showNotification('تم إضافة المستخدم بنجاح', 'success');
+            
+            // مسح الحقول
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-email').value = '';
+            document.getElementById('user-password').value = '';
+        }
+
+        function deleteItem(type, id) {
+            currentDeleteItem = { type, id };
+            openModal('delete-confirm-modal');
+        }
+
+        function confirmDelete() {
+            if (!currentDeleteItem) return;
+            
+            const { type, id } = currentDeleteItem;
+            let itemName = '';
+            
+            switch (type) {
+                case 'page':
+                    const pageIndex = dashboardData.pages.findIndex(p => p.id === id);
+                    if (pageIndex !== -1) {
+                        itemName = dashboardData.pages[pageIndex].title;
+                        dashboardData.pages.splice(pageIndex, 1);
+                        loadPagesTable();
+                    }
+                    break;
+                case 'product':
+                    const productIndex = dashboardData.products.findIndex(p => p.id === id);
+                    if (productIndex !== -1) {
+                        itemName = dashboardData.products[productIndex].name;
+                        dashboardData.products.splice(productIndex, 1);
+                        loadProductsTable();
+                    }
+                    break;
+                case 'news':
+                    const newsIndex = dashboardData.news.findIndex(n => n.id === id);
+                    if (newsIndex !== -1) {
+                        itemName = dashboardData.news[newsIndex].title;
+                        dashboardData.news.splice(newsIndex, 1);
+                        loadNewsTable();
+                    }
+                    break;
+                case 'user':
+                    const userIndex = dashboardData.users.findIndex(u => u.id === id);
+                    if (userIndex !== -1) {
+                        itemName = dashboardData.users[userIndex].name;
+                        dashboardData.users.splice(userIndex, 1);
+                        loadUsersTable();
+                    }
+                    break;
+            }
+            
+            saveData();
+            updateCounters();
+            addActivity('حذف', `${type}: ${itemName}`);
+            closeModal('delete-confirm-modal');
+            showNotification('تم الحذف بنجاح', 'success');
+            
+            currentDeleteItem = null;
+        }
+
+        function editItem(type, id) {
+            // هذه الدالة تحتاج إلى تطوير حسب احتياجاتك
+            showNotification('ميزة التعديل قيد التطوير', 'warning');
+        }
+
+        function addActivity(action, item) {
+            const activity = {
+                user: "مدير النظام",
+                action,
+                item,
+                time: "الآن"
+            };
+            
+            dashboardData.activities.push(activity);
+            saveData();
+            loadActivitiesTable();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                'banking': 'حلول البنوك',
+                'power': 'حلول الطاقة',
+                'it': 'تكنولوجيا المعلومات'
+            };
+            return categories[category] || category;
+        }
+
+        function getNewsCategoryName(category) {
+            const categories = {
+                'technology': 'تكنولوجيا',
+                'business': 'أعمال',
+                'products': 'منتجات'
+            };
+            return categories[category] || category;
+        }
+
+        function getRoleName(role) {
+            const roles = {
+                'admin': 'مدير',
+                'editor': 'محرر',
+                'author': 'مؤلف'
+            };
+            return roles[role] || role;
+        }
+
+        function setupEventListeners() {
+            // Toggle sidebar
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const sidebar = document.getElementById('sidebar');
+            
+            if (toggleSidebar && sidebar) {
+                toggleSidebar.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Menu items functionality
+            const menuItems = document.querySelectorAll('.menu-item');
+            const submenuItems = document.querySelectorAll('.submenu-item');
+            const tabs = document.querySelectorAll('.tab');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    
+                    if (section) {
+                        // Remove active class from all sections
+                        document.querySelectorAll('.dashboard-section').forEach(section => {
+                            section.classList.remove('active');
+                        });
+                        
+                        // Remove active class from all menu items
+                        menuItems.forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        
+                        // Add active class to current menu item
+                        this.classList.add('active');
+                        
+                        // Show corresponding section
+                        if (section === 'pages') {
+                            // Toggle submenu for pages
+                            const submenu = this.nextElementSibling;
+                            if (submenu && submenu.classList.contains('submenu')) {
+                                submenu.classList.toggle('open');
+                            }
+                        } else {
+                            document.getElementById(section + '-section').classList.add('active');
+                        }
+                    }
+                });
+            });
+            
+            submenuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    
+                    if (section) {
+                        // Remove active class from all sections
+                        document.querySelectorAll('.dashboard-section').forEach(section => {
+                            section.classList.remove('active');
+                        });
+                        
+                        // Show corresponding section
+                        document.getElementById(section + '-section').classList.add('active');
+                        
+                        // Activate the parent menu item
+                        document.querySelector('.menu-item[data-section="pages"]').classList.add('active');
+                    }
+                });
+            });
+            
+            // Tabs functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to current tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show current tab content
+                    document.getElementById(tabId + '-tab').classList.add('active');
+                });
+            });
+            
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                        window.location.href = 'index.html';
+                    }
+                });
+            }
+        }
+
+        // Modal functionality
+        window.openModal = function(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        };
+        
+        window.closeModal = function(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        };
+        
+        // Close modal when clicking outside
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Translation dictionary
+        const translations = {
+            'ar': {
+                'dashboard_title': 'لوحة التحكم',
+                'admin_panel': 'لوحة إدارة الموقع',
+                'menu_dashboard': 'لوحة التحكم',
+                'menu_pages': 'الصفحات',
+                'submenu_home': 'الصفحة الرئيسية',
+                'submenu_products': 'المنتجات',
+                'submenu_projects': 'المشاريع',
+                'submenu_news': 'الأخبار',
+                'submenu_store': 'المتجر',
+                'submenu_contact': 'اتصل بنا',
+                'menu_products': 'إدارة المنتجات',
+                'menu_news': 'إدارة الأخبار',
+                'menu_users': 'المستخدمين',
+                'menu_settings': 'الإعدادات',
+                'menu_logout': 'تسجيل الخروج',
+                'dashboard_welcome': 'مرحباً بك في لوحة التحكم',
+                'stat_pages': 'الصفحات',
+                'stat_products': 'المنتجات',
+                'stat_news': 'أخبار',
+                'stat_users': 'مستخدمين',
+                'recent_activity': 'النشاط الحديث',
+                'activity_user': 'المستخدم',
+                'activity_action': 'الإجراء',
+                'activity_item': 'العنصر',
+                'activity_time': 'الوقت',
+                'action_updated': 'قام بالتعديل',
+                'action_added': 'قام بالإضافة',
+                'action_deleted': 'قام بالحذف',
+                'item_homepage': 'الصفحة الرئيسية',
+                'item_product': 'منتج جديد',
+                'item_news': 'خبر قديم',
+                'manage_pages': 'إدارة الصفحات',
+                'pages_list': 'قائمة الصفحات',
+                'add_page': 'إضافة صفحة',
+                'page_name': 'اسم الصفحة',
+                'page_url': 'رابط الصفحة',
+                'page_status': 'الحالة',
+                'actions': 'الإجراءات',
+                'page_home': 'الصفحة الرئيسية',
+                'page_products': 'المنتجات',
+                'page_projects': 'المشاريع',
+                'status_active': 'نشط',
+                'btn_edit': 'تعديل',
+                'btn_delete': 'حذف',
+                'page_title': 'عنوان الصفحة',
+                'page_content': 'محتويات الصفحة',
+                'btn_cancel': 'إلغاء',
+                'btn_save': 'حفظ',
+                'edit_page': 'تعديل الصفحة',
+                'admin_name': 'مدير النظام',
+                'manage_products': 'إدارة المنتجات',
+                'products_list': 'قائمة المنتجات',
+                'add_product': 'إضافة منتج',
+                'product_name': 'اسم المنتج',
+                'product_category': 'الفئة',
+                'product_price': 'السعر',
+                'product_description': 'الوصف',
+                'category_banking': 'حلول البنوك',
+                'category_power': 'حلول الطاقة',
+                'category_it': 'تكنولوجيا المعلومات',
+                'manage_news': 'إدارة الأخبار',
+                'news_list': 'قائمة الأخبار',
+                'add_news': 'إضافة خبر',
+                'news_title': 'عنوان الخبر',
+                'news_category': 'الفئة',
+                'news_date': 'التاريخ',
+                'news_content': 'محتوى الخبر',
+                'category_technology': 'تكنولوجيا',
+                'category_business': 'أعمال',
+                'category_products': 'منتجات',
+                'manage_users': 'إدارة المستخدمين',
+                'users_list': 'قائمة المستخدمين',
+                'add_user': 'إضافة مستخدم',
+                'user_name': 'اسم المستخدم',
+                'user_email': 'البريد الإلكتروني',
+                'user_password': 'كلمة المرور',
+                'user_role': 'الدور',
+                'role_admin': 'مدير',
+                'role_editor': 'محرر',
+                'role_author': 'مؤلف',
+                'manage_settings': 'الإعدادات',
+                'settings_general': 'عام',
+                'settings_language': 'اللغة',
+                'settings_seo': 'SEO',
+                'settings_site_title': 'اسم الموقع',
+                'settings_site_description': 'وصف الموقع',
+                'settings_admin_email': 'بريد المدير',
+                'btn_save_settings': 'حفظ الإعدادات',
+                'settings_default_language': 'اللغة الافتراضية',
+                'settings_rtl_support': 'دعم النمط من اليمين لليسار (RTL)',
+                'settings_meta_title': 'Meta Title',
+                'settings_meta_description': 'Meta Description',
+                'settings_meta_keywords': 'Meta Keywords',
+                'edit_home_page': 'تعديل الصفحة الرئيسية',
+                'btn_save_changes': 'حفظ التغييرات',
+                'confirm_delete': 'تأكيد الحذف',
+                'confirm_delete_message': 'هل أنت متأكد من أنك تريد حذف هذا العنصر؟',
+                'btn_confirm_delete': 'تأكيد الحذف'
+            },
+            'en': {
+                'dashboard_title': 'Dashboard',
+                'admin_panel': 'Admin Panel',
+                'menu_dashboard': 'Dashboard',
+                'menu_pages': 'Pages',
+                'submenu_home': 'Home Page',
+                'submenu_products': 'Products',
+                'submenu_projects': 'Projects',
+                'submenu_news': 'News',
+                'submenu_store': 'Store',
+                'submenu_contact': 'Contact',
+                'menu_products': 'Manage Products',
+                'menu_news': 'Manage News',
+                'menu_users': 'Users',
+                'menu_settings': 'Settings',
+                'menu_logout': 'Logout',
+                'dashboard_welcome': 'Welcome to Dashboard',
+                'stat_pages': 'Pages',
+                'stat_products': 'Products',
+                'stat_news': 'News',
+                'stat_users': 'Users',
+                'recent_activity': 'Recent Activity',
+                'activity_user': 'User',
+                'activity_action': 'Action',
+                'activity_item': 'Item',
+                'activity_time': 'Time',
+                'action_updated': 'Updated',
+                'action_added': 'Added',
+                'action_deleted': 'Deleted',
+                'item_homepage': 'Home Page',
+                'item_product': 'New Product',
+                'item_news': 'Old News',
+                'manage_pages': 'Manage Pages',
+                'pages_list': 'Pages List',
+                'add_page': 'Add Page',
+                'page_name': 'Page Name',
+                'page_url': 'Page URL',
+                'page_status': 'Status',
+                'actions': 'Actions',
+                'page_home': 'Home Page',
+                'page_products': 'Products',
+                'page_projects': 'Projects',
+                'status_active': 'Active',
+                'btn_edit': 'Edit',
+                'btn_delete': 'Delete',
+                'page_title': 'Page Title',
+                'page_content': 'Page Content',
+                'btn_cancel': 'Cancel',
+                'btn_save': 'Save',
+                'edit_page': 'Edit Page',
+                'admin_name': 'Admin',
+                'manage_products': 'Manage Products',
+                'products_list': 'Products List',
+                'add_product': 'Add Product',
+                'product_name': 'Product Name',
+                'product_category': 'Category',
+                'product_price': 'Price',
+                'product_description': 'Description',
+                'category_banking': 'Banking Solutions',
+                'category_power': 'Power Solutions',
+                'category_it': 'Information Technology',
+                'manage_news': 'Manage News',
+                'news_list': 'News List',
+                'add_news': 'Add News',
+                'news_title': 'News Title',
+                'news_category': 'Category',
+                'news_date': 'Date',
+                'news_content': 'News Content',
+                'category_technology': 'Technology',
+                'category_business': 'Business',
+                'category_products': 'Products',
+                'manage_users': 'Manage Users',
+                'users_list': 'Users List',
+                'add_user': 'Add User',
+                'user_name': 'User Name',
+                'user_email': 'Email',
+                'user_password': 'Password',
+                'user_role': 'Role',
+                'role_admin': 'Admin',
+                'role_editor': 'Editor',
+                'role_author': 'Author',
+                'manage_settings': 'Settings',
+                'settings_general': 'General',
+                'settings_language': 'Language',
+                'settings_seo': 'SEO',
+                'settings_site_title': 'Site Title',
+                'settings_site_description': 'Site Description',
+                'settings_admin_email': 'Admin Email',
+                'btn_save_settings': 'Save Settings',
+                'settings_default_language': 'Default Language',
+                'settings_rtl_support': 'Right-to-Left (RTL) Support',
+                'settings_meta_title': 'Meta Title',
+                'settings_meta_description': 'Meta Description',
+                'settings_meta_keywords': 'Meta Keywords',
+                'edit_home_page': 'Edit Home Page',
+                'btn_save_changes': 'Save Changes',
+                'confirm_delete': 'Confirm Delete',
+                'confirm_delete_message': 'Are you sure you want to delete this item?',
+                'btn_confirm_delete': 'Confirm Delete'
+            }
+        };
+        
+        // Set language function
+        function setLanguage(lang) {
+            // Update all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            // Update body direction and class
+            if (lang === 'ar') {
+                document.body.dir = 'rtl';
+                document.body.classList.remove('ltr');
+                document.body.classList.add('rtl');
+            } else {
+                document.body.dir = 'ltr';
+                document.body.classList.remove('rtl');
+                document.body.classList.add('ltr');
+            }
+            
+            // Update button text
+            if (document.getElementById('langToggle')) {
+                document.getElementById('langToggle').textContent = lang === 'ar' ? 'EN' : 'AR';
+            }
+        }
+        
+        // Check for saved language preference or default to Arabic
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'ar';
+        setLanguage(savedLanguage);
+        
+        // Toggle language on button click
+        const langToggle = document.getElementById('langToggle');
+        if (langToggle) {
+            langToggle.addEventListener('click', function() {
+                const currentLang = document.body.classList.contains('rtl') ? 'ar' : 'en';
+                const newLang = currentLang === 'ar' ? 'en' : 'ar';
+                setLanguage(newLang);
+                localStorage.setItem('selectedLanguage', newLang);
+            });
+        }
+    </script>
+</body>
+</html>
